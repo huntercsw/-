@@ -42,8 +42,13 @@ function choose_deploy_method(){
 
 function code_get(){
     write_log "get code"
-    cd ${CODE_DIR} && echo "git pull"
+    cd ${CODE_DIR} && git pull
     cp -r ${CODE_DIR} ${TMP_DIR}/
+    cd ${PROJECT_NAME}
+    # 取git commit的版本号
+    PROJECT_VERSION=${git show | grep commit | cut -d " " -f2}
+    # 取git commit版本号的前8位作为项目版本号
+    PROJECT_VERSION=$(echo ${PROJECT_VERSION:0:8})
 }
 
 function code_compile(){
@@ -52,8 +57,8 @@ function code_compile(){
 
 function code_config(){
     write_log "upload config file"
-    PROJECT_VERSION=1.0.0
     /bin/cp -r ${CONFIG_DIR}/base/* ${TMP_DIR}/${PROJECT_NAME}/
+    # PROJECT_VERSION 在get_code函数中获取
     PKG_NAME="${PROJECT_NAME}"_"${PROJECT_VERSION}"_"${CURRENT_DATA}-${CURRENT_TIME}"
     cd ${TMP_DIR} && mv ${PROJECT_NAME} ${PKG_NAME}
 }
