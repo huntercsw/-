@@ -88,13 +88,23 @@ function code_deploy(){
 # the core of deploy automatically is ***creare soft link of project packackage to base dir***
 # if you need rollback, just delete old soft link and create a new soft link to project package which version is needed
 # 自动化部署的精髓就是创建一个项目包的软连接指向nginx的root目录下面，这样在回滚的时候效率十分高且简单。（仅需删除原来的软连接，重新建立新的软连接即可）
+# 部署的时候一般会对主机进行分组，一组一组部署
     for node in ${NODE_LIST};do
         ssh $node "rm -f /webroot/web && ln -s /opt/webroot/${PKG_NAME} /webroot/web"
     done
 }
 
 function code_test(){
-    echo code_test
+# 对预生产环境进行测试
+    PREVIOUS_PRODUCT_URL="http://x.x.x.x:xx"
+    curl -s --head ${PREVIOUS_PRODUCT_URL} | grep "200 OK"
+    if [ $? -ne 0 ];then
+        if [ -f ${LOCK_FILE} ];then
+            release_progress_lock;
+        fi
+        write_log "${PREVIOUS_PRODUCT_URL} test error"
+        echo "PREVIOUS_PRODUCE_URL Test error" && exit
+    fi
 }
 
 function add_node_to_cluster(){
