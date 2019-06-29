@@ -95,7 +95,7 @@ function code_deploy(){
 }
 
 function code_test(){
-# 对预生产环境进行测试
+# 每部署完一组后，需要进行测试，url为该组的url列表
     PREVIOUS_PRODUCT_URL="http://x.x.x.x:xx"
     curl -s --head ${PREVIOUS_PRODUCT_URL} | grep "200 OK"
     if [ $? -ne 0 ];then
