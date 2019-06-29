@@ -113,7 +113,24 @@ function add_node_to_cluster(){
 }
 
 function rollback(){
-    echo rollback
+    if [ -z $1 ];then
+        release_progress_lock;
+        echo "param error" && exit
+    fi
+
+    ROLLBACK_TO=$1
+    ROLLBACK_NODE_LIST="192.168.0.30 192.168.0.40"
+    
+    case ${ROLLBACK_TO} in
+        list)
+            ls -l /opt/webroot/*.tar.gz
+        ;;
+        *)
+            for node in ROLLBACK_NODE_LIST;do
+                 ssh ${node} "if [ -d /opt/webroot/${ROLLBACK_TO} ];then rm -f /webroot/web && ln-s /opt/webroot/${ROLLBACK_TO} /webroot/web;else echo "${node} no ${ROLLBACK_TO}" fi"
+            done
+    esac
+
 }
 
 function main(){
@@ -123,6 +140,7 @@ function main(){
     fi
 
     DEPLOY_METHOD=$1
+    ROLLBACK_VERSION=$2
     case $DEPLOY_METHOD in
         deploy)
                 add_progress_lock;
@@ -140,14 +158,14 @@ function main(){
                 ;;
         rollback)
                 add_progress_lock;
-                rollback;
+                rollback ${ROLLBACK_VERSION};
                 ;;
         *)
                 choose_deploy_method;
     esac
 }
 
-main $1
+main $1 $2
 if [ -f ${LOCK_FILE} ];then
     release_progress_lock;
 fi
