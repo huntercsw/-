@@ -45,9 +45,9 @@ function code_get(){
     cd ${CODE_DIR} && git pull
     cp -r ${CODE_DIR} ${TMP_DIR}/
     cd ${PROJECT_NAME}
-    # 取git commit的版本号
+    # 取git commit id
     PROJECT_VERSION=${git show | grep commit | cut -d " " -f2}
-    # 取git commit版本号的前8位作为项目版本号
+    # 取git commit id的前8位作为项目版本号
     PROJECT_VERSION=$(echo ${PROJECT_VERSION:0:8})
 }
 
