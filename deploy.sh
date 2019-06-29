@@ -19,6 +19,7 @@ TAR_DIR="/deploy/tar"
 TMP_DIR="/deploy/tmp"
 
 # Lock file
+# 确保该部署进程不能被多人调用
 LOCK_FILE="/tmp/deploy.lock"
 
 function add_progress_lock(){
